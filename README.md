@@ -27,6 +27,9 @@ ___
   - [Environment variables](#environment-variables)
   - [Docker-Compose examples](#docker-compose-examples)
     - [Gameserver with RCON-CLI-Tool](#gameserver-with-rcon-cli-tool)
+  - [Run server \& backup commands](#run-server--backup-commands)
+    - [Server Manager](#server-manager)
+    - [Backup Manager](#backup-manager)
   - [Run RCON commands](#run-rcon-commands)
   - [FAQ](#faq)
     - [How can I use the interactive console in Portainer with this image?](#how-can-i-use-the-interactive-console-in-portainer-with-this-image)
@@ -88,6 +91,47 @@ See [this file](README_ENV.md) for the documentation
 
 See [example docker-compose.yml](docker-compose.yml).
 
+## Run server & backup commands
+
+Currently only the following commands are supported:
+  - Create a backup
+  - List all backups or a specific number of backup
+  - Clean up backups by keeping the most recent X backups (default: 5)
+  - Restore a backup
+  - Restart the server (gracefully and without exiting the container)
+
+
+### Server Manager
+
+
+
+### Backup Manager
+Usage: `docker exec -ti palworld-dedicated-server -c "cd / && ./backupmanager.sh [options] [arguments]"`
+
+| Option             | Argument        | Required/Optional | Default Value | Values | Description                                                                                                                                 |
+| ------------------ | --------------- | ----------------- | ------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `-c` or `--create` | N/A             | N/A               | N/A           | N/A    | Creates a backup.                                                                                                                           |
+| `-l` or `--list`   | `<num_entries>` | Optional          | N/A           | >=0    | Lists all backups. If `<num_entries>` is specified, only<br>the most recent `<num_entries>` backups are listed.<br>Only accepts positive numbers. |
+| `-cl` or `--clean` | `<num_to_keep>` | Optional          | 5             | >=0    | Cleans up backups by keeping the most recent<br>`<num_to_keep>` backups.<br>Only accepts positive numbers.                                        |
+
+Examples:
+```shell
+$ docker exec palworld-dedicated-server /bin/sh -c "cd / && ./backupmanager.sh --create"
+Creating backup 2021-09-26_19-00-01
+
+$ docker exec palworld-dedicated-server /bin/sh -c "cd / && ./backupmanager.sh --list"  
+2021-09-26_15-00-01
+2021-09-26_16-00-01
+2021-09-26_17-00-01
+2021-09-26_18-00-01
+
+$ docker exec palworld-dedicated-server /bin/sh -c "cd / && ./backupmanager.sh --clean 5"
+Cleaning up backups, keeping 5
+```
+
+
+
+
 ## Run RCON commands
 
 Open a shell into your container via `docker exec -ti palworld-dedicated-server bash`, then you can run commands against the gameserver via the command `rcon` or `rconcli`
@@ -101,7 +145,7 @@ Complete Save
 ```
 ------ OR ------
 
-Do a `docker exec -ti palworld-dedicated-server -c "rconcli <command>"` to run in a single command.
+Do a `docker exec -ti palworld-dedicated-server -c "rconcli <command>"` right on your terminal/shell.
 ```shell
 $ docker exec -ti palworld-dedicated-server -c "rconcli showplayers"
 name,playeruid,steamid

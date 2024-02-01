@@ -153,4 +153,6 @@ VOLUME [ "/palworld" ]
 
 ADD --chmod=777 entrypoint.sh /entrypoint.sh
 
+USER "${STEAM_USER}"
+
 ENTRYPOINT ["/entrypoint.sh"]
